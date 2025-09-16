@@ -1,0 +1,16 @@
+# Improve GitHub Linguist language breakdown
+# Treat Angular HTML templates as HTML (default) but don't let compiled assets skew stats
+frontend/dist/* linguist-vendored
+
+# Mark generated build artifacts as vendored/ignored
+**/bin/* linguist-generated
+**/obj/* linguist-generated
+
+# Explicitly classify key source directories
+backend/RedisStudio.Api/**/*.cs linguist-language=C#
+frontend/src/**/*.ts linguist-language=TypeScript
+frontend/Dockerfile linguist-language=Dockerfile
+backend/Dockerfile linguist-language=Dockerfile
+
+# Ignore minified vendor scripts if any appear later
+**/*.min.js linguist-vendored
