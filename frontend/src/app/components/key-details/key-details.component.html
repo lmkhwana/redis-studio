@@ -1,0 +1,40 @@
+<div class="details-header">
+  <div>
+    <h4>{{ selectedKey?.key || ui.details.selectPrompt }}</h4>
+    <div class="small-muted">{{ "Key metadata and value inspector" }}</div>
+  </div>
+  <!-- <div class="actions" *ngIf="selectedKey">
+    <button class="btn ghost" (click)="edit.emit()" [disabled]="!canEdit">Edit</button>
+    <button class="btn ghost" (click)="delete.emit()">Delete</button>
+  </div> -->
+</div>
+
+<div class="meta" *ngIf="selectedKey as sk">
+  <div class="tag">Type: {{ sk.type }}</div>
+  <div class="tag">TTL: {{ sk.ttl ? sk.ttl + "s" : "—" }}</div>
+  <div class="tag" *ngIf="sk.daysToExpire !== null && sk.daysToExpire !== undefined">Days Left: {{ sk.daysToExpire }}</div>
+  <div class="tag">Size: {{ sk.size }}</div>
+</div>
+
+<div class="value-box" aria-live="polite">
+  <div *ngIf="!selectedKey" class="muted">
+    {{ ui.details.valuePlaceholder }}
+  </div>
+  <div *ngIf="selectedKey && !isLoadingValue && selectedKeyValue">
+    <pre>{{ formatValue(selectedKeyValue.value) }}</pre>
+    <div *ngIf="selectedKeyValue.rawString && selectedKeyValue.rawString !== selectedKeyValue.value" class="muted" style="margin-top:6px;font-size:11px;word-break:break-all;">
+      Raw: {{ selectedKeyValue.rawString }}
+    </div>
+  </div>
+</div>
+
+<div *ngIf="selectedKey" class="footer-row">
+  <div class="small-muted">
+    Last fetched: {{ lastFetched | date : "short" }}
+  </div>
+  <div class="spacer"></div>
+  <button class="btn ghost" (click)="export.emit()">
+    {{ ui.actions.export }}
+  </button>
+  <button class="btn ghost" (click)="copy.emit()">{{ ui.actions.copy }}</button>
+</div>

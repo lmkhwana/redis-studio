@@ -1,0 +1,125 @@
+<div class="app" role="application" aria-labelledby="appTitle">
+  <app-top-bar
+    [isConnected]="isConnected"
+    [connectionStatusText]="connectionStatusText"
+    [connectionStatusColor]="connectionStatusColor"
+    (connect)="openConnectionModal()"
+    (disconnect)="disconnect()"
+    (newKey)="openNewKeyDialog()"
+    (toggleTheme)="themeService.toggleTheme()"
+  ></app-top-bar>
+
+  <!-- Main content area - exact replica -->
+  <main class="main" role="main" id="mainLayout" aria-live="polite">
+    <!-- Left sidebar -->
+    <aside class="card sidebar" aria-label="Connections and databases">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
+      >
+        <div>
+          <h3>{{ "Connections" }}</h3>
+          <div class="small-muted">{{ "Saved endpoints & recent" }}</div>
+        </div>
+        <button
+          class="btn ghost"
+          (click)="openConnectionModal()"
+          aria-label="Add connection"
+        >
+          +
+        </button>
+      </div>
+
+      <!-- Server info when connected -->
+      <div *ngIf="serverInfo" class="server-info">
+        <div class="small-muted">{{ "Server Info" }}</div>
+        <div class="info-item">
+          <span class="small-muted">{{ "Version:" }}</span>
+          <span>{{ serverInfo.version }}</span>
+        </div>
+        <div class="info-item">
+          <span class="small-muted">{{ "Memory:" }}</span>
+          <span>{{ serverInfo.used_memory }}</span>
+        </div>
+        <div class="info-item">
+          <span class="small-muted">{{ "Clients:" }}</span>
+          <span>{{ serverInfo.connected_clients }}</span>
+        </div>
+      </div>
+
+      <app-memory-usage
+        *ngIf="isConnected"
+        [percent]="memoryUsagePercent"
+      ></app-memory-usage>
+    </aside>
+
+    <!-- Center: key list -->
+    <section class="card" aria-label="Key list">
+      <app-key-list
+        [isConnected]="isConnected"
+        [isLoadingKeys]="isLoadingKeys"
+        [displayedKeys]="displayedKeys"
+        [selectedKey]="selectedKey"
+        [total]="total"
+        [totalPages]="totalPages"
+        [page]="page"
+        [searchPattern]="searchPattern"
+        [typeFilter]="typeFilter"
+        [pageSize]="pageSize"
+        [getTypeColor]="getTypeColor.bind(this)"
+        [getKeyDescription]="getKeyDescription.bind(this)"
+        (searchPatternChange)="searchPattern = $any($event); onSearchChange()"
+        (typeFilterChange)="typeFilter = $any($event); onFilterChange()"
+        (refresh)="refreshKeys()"
+        (select)="selectKey($any($event))"
+        (openNewKey)="openNewKeyDialog()"
+      ></app-key-list>
+
+      <!-- Pagination Controls (will extract later) -->
+      <app-pagination-controls
+        [page]="page"
+        [totalPages]="totalPages"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[10]"
+        (pageChange)="goToPage($event)"
+        (pageSizeChange)="pageSize = $event; page = 0; refreshKeys()"
+      ></app-pagination-controls>
+    </section>
+
+    <!-- Right: details -->
+    <aside class="card details" aria-label="Key details">
+      <app-key-details
+        [selectedKey]="selectedKey"
+        [selectedKeyValue]="selectedKeyValue"
+        [isLoadingValue]="isLoadingValue"
+        [lastFetched]="lastFetched"
+        [canEdit]="canEditKey()"
+        [formatValue]="formatValue.bind(this)"
+        (export)="exportKey()"
+        (copy)="copyKeyValue()"
+        (edit)="editSelectedKey()"
+        (delete)="deleteSelectedKey()"
+      ></app-key-details>
+    </aside>
+  </main>
+</div>
+
+<!-- Connection Modal -->
+<app-connection-modal
+  #connectionModal
+  [isAlreadyConnected]="isConnected"
+  (connected)="onConnectionEstablished($event)"
+  (closed)="({})"
+></app-connection-modal>
+
+<app-key-editor-modal
+  [visible]="keyEditorVisible"
+  [editingKey]="editingKey"
+  [existingValue]="selectedKeyValue"
+  [isSaving]="isSavingKey"
+  (closed)="closeKeyEditor()"
+  (save)="onKeyEditorSave($any($event))"
+></app-key-editor-modal>

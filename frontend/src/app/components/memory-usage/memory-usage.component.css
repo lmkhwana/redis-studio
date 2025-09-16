@@ -1,0 +1,22 @@
+.memory-usage {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.memory-bar-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.memory-bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--glass-2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.memory-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #2aa6a0);
+}

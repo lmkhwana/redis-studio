@@ -1,0 +1,15 @@
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 8px 0 4px 0;
+  flex-wrap: wrap;
+}
+.page-size-select {
+  background: var(--glass-2);
+  color: var(--text-primary);
+  border: 1px solid var(--glass);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 12px;
+}

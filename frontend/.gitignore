@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Angular build outputs
+dist/
+.tmp/
+
+# Angular cache
+.angular/cache/
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db

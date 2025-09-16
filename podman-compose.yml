@@ -1,0 +1,79 @@
+version: '3.9'
+
+# Podman compose file (compatible with Docker Compose v2 syntax)
+services:
+  redis:
+    image: docker.io/library/redis:7-alpine
+    container_name: redis-studio-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    networks:
+      redis-studio-network:
+        aliases: ["redis"]
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: redis-studio-backend
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Redis: redis:6379
+      # Allow CORS from frontend container name and host
+      # (Backend already configured for http://frontend:80 & localhost:4200)
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "5000:8080"
+    # Alpine images may not include curl by default in some bases; ensure available for healthcheck
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      redis-studio-network:
+        aliases: ["api", "backend"]
+
+  frontend:
+    # Build a production static bundle then serve via nginx
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: redis-studio-frontend
+    restart: unless-stopped
+    environment:
+      REDIS_STUDIO_API_BASE: http://localhost:5000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "4200:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/ | grep -i redis || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      redis-studio-network:
+        aliases: ["frontend"]
+
+volumes:
+  redis_data: {}
+
+networks:
+  redis-studio-network:
+    driver: bridge

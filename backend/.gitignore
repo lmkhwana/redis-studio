@@ -1,0 +1,22 @@
+# .NET build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS local
+.vs/
+
+# Logs
+*.log
+
+# Coverage / Test
+coverage/
+TestResults/
+
+# Generated
+*.generated.cs

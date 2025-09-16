@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redis Studio</title>
+    <style>
+        :root {
+            --bg: #0f1724;
+            --panel: #0b1220;
+            --muted: #9aa4b2;
+            --accent: #4fd1c5;
+            --glass: rgba(255,255,255,0.03);
+            --radius: 12px;
+            --glass-2: rgba(255,255,255,0.02);
+            --text-primary: #e6eef6;
+            --text-secondary: #9aa4b2;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --panel: #ffffff;
+            --muted: #64748b;
+            --accent: #0891b2;
+            --glass: rgba(0,0,0,0.03);
+            --glass-2: rgba(0,0,0,0.02);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(180deg, #071026 0%, #071827 60%);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] body {
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 60%);
+        }
+
+        .app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 14px;
+            background: linear-gradient(90deg, var(--glass-2), rgba(255,255,255,0.01));
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(2,6,23,0.6), inset 0 1px 0 var(--glass);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #0ea5a4, #2dd4bf);
+            color: #042027;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(45,212,191,0.12);
+        }
+
+        .top-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 260px 1fr 360px;
+            grid-template-rows: 1fr auto;
+            gap: 16px;
+            align-items: stretch;
+            min-height: 0;
+        }
+
+        .card {
+            background: linear-gradient(180deg, var(--glass-2), rgba(255,255,255,0.01));
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: 0 8px 24px rgba(2,6,23,0.6);
+            border: 1px solid var(--glass);
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .keys-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-2);
+            padding: 8px 10px;
+            border-radius: 10px;
+            min-width: 220px;
+        }
+
+        .search input {
+            background: transparent;
+            border: 0;
+            outline: none;
+            color: inherit;
+            font-size: 13px;
+            width: 100%;
+        }
+
+        .key-list {
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 6px;
+        }
+
+        .key-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+            cursor: pointer;
+            transition: transform 0.12s;
+        }
+
+        .key-row:hover {
+            transform: translateY(-3px);
+        }
+
+        .key-row.selected {
+            background: var(--glass);
+            border: 1px solid var(--accent);
+        }
+
+        .type-pill {
+            font-size: 12px;
+            padding: 6px 8px;
+            border-radius: 999px;
+            background: var(--glass);
+            color: var(--muted);
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #05202a, #07303a);
+            border: 1px solid var(--glass);
+            cursor: pointer;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 209, 197, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--glass);
+            font-weight: 500;
+        }
+
+        .status {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 999px;
+            font-size: 13px;
+            background: var(--glass-2);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #f97316;
+            box-shadow: 0 0 8px rgba(249,115,22,0.15);
+        }
+
+        .dot.connected {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16,185,129,0.15);
+        }
+
+        .small-muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .meta {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .meta .tag {
+            background: var(--glass);
+            padding: 6px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .value-box {
+            margin-top: 12px;
+            background: #071827;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 13px;
+            overflow: auto;
+            max-height: 300px;
+            border: 1px solid var(--glass);
+        }
+
+        .console {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--glass);
+            box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+        }
+
+        .input-console {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input-console input {
+            flex: 1;
+            background: transparent;
+            border: 0;
+            outline: none;
+            color: inherit;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .connection-screen {
+            position: fixed;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            z-index: 1200;
+            background: linear-gradient(180deg, rgba(3,6,18,0.55), rgba(1,4,12,0.7));
+            backdrop-filter: blur(6px);
+        }
+
+        .connect-card {
+            width: 520px;
+            max-width: 92%;
+            padding: 22px;
+            border-radius: 14px;
+            background: linear-gradient(180deg, var(--glass-2), rgba(255,255,255,0.01));
+            box-shadow: 0 18px 60px rgba(2,6,23,0.8);
+            border: 1px solid var(--glass);
+        }
+
+        .connect-card h2 {
+            margin: 0 0 6px 0;
+            font-size: 20px;
+        }
+
+        .connect-card p {
+            margin: 0 0 16px 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .form-row input[type="text"] {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--glass);
+            background: var(--glass-2);
+            color: inherit;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-up {
+            transform: translateY(8px);
+            opacity: 0;
+            animation: pop 0.42s ease forwards;
+        }
+
+        @keyframes pop {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .key-editor-modal {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--glass);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--glass);
+            border-radius: 8px;
+            background: var(--glass-2);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main {
+                grid-template-columns: 240px 1fr 300px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .main {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+            
+            .app {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app" id="app">
+        <!-- Top bar -->
+        <div class="topbar">
+            <div class="brand">
+                <div class="logo">RS</div>
+                <div>
+                    <div style="font-size:14px">Redis Studio</div>
+                    <div style="font-size:12px;color:var(--muted)">Modern Redis GUI — local & cloud</div>
+                </div>
+            </div>
+
+            <div class="top-actions">
+                <div class="status">
+                    <span class="dot" id="statusDot"></span>
+                    <span id="statusText" class="muted">Not connected</span>
+                </div>
+                <button class="btn ghost" onclick="openConnectionModal()">Connections</button>
+                <button class="btn ghost" onclick="toggleTheme()" id="themeBtn">🌙</button>
+                <button class="btn" onclick="openNewKeyDialog()">New Key</button>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <main class="main">
+            <!-- Left sidebar -->
+            <aside class="card sidebar">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div>
+                        <h3 style="margin:0;font-size:13px;color:var(--muted)">Connections</h3>
+                        <div class="small-muted">Saved endpoints & recent</div>
+                    </div>
+                    <button class="btn ghost" onclick="openConnectionModal()">+</button>
+                </div>
+
+                <div id="serverInfo" class="hidden">
+                    <div class="small-muted">Server Info</div>
+                    <div style="margin-top:8px">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                            <span class="small-muted">Version:</span>
+                            <span id="serverVersion">—</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                            <span class="small-muted">Memory:</span>
+                            <span id="serverMemory">—</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between">
+                            <span class="small-muted">Clients:</span>
+                            <span id="serverClients">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:auto" id="memoryUsage" class="hidden">
+                    <div class="small-muted">Memory Usage</div>
+                    <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+                        <div style="flex:1;height:8px;background:var(--glass-2);border-radius:6px;overflow:hidden">
+                            <div id="memoryBar" style="width:0%;height:100%;background:linear-gradient(90deg,var(--accent),#2aa6a0);transition:width 0.3s"></div>
+                        </div>
+                        <div class="small-muted" id="memoryPercent">0%</div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center: key list -->
+            <section class="card">
+                <div class="keys-header">
+                    <div>
+                        <div style="font-weight:600">Keys</div>
+                        <div class="small-muted" id="keyStats">No keys found</div>
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <div class="search">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M11 19a8 8 0 1 1 5.293-14.293A8 8 0 0 1 11 19Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                            </svg>
+                            <input id="searchKeys" placeholder="Search keys (pattern: user:*)" oninput="filterKeys()" />
+                        </div>
+                        <select id="typeFilter" class="small-muted" onchange="filterKeys()">
+                            <option value="">All types</option>
+                            <option value="string">string</option>
+                            <option value="hash">hash</option>
+                            <option value="list">list</option>
+                            <option value="set">set</option>
+                        </select>
+                        <button class="btn ghost" onclick="refreshKeys()">Refresh</button>
+                    </div>
+                </div>
+
+                <div class="key-list" id="keyList">
+                    <div class="muted" style="text-align:center;padding:40px">
+                        Connect to Redis to view keys
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: details -->
+            <aside class="card details">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <h4 id="detailsTitle">Select a key</h4>
+                        <div class="small-muted">Key metadata and value inspector</div>
+                    </div>
+                    <div style="display:flex;gap:8px" id="keyActions" class="hidden">
+                        <button class="btn ghost" onclick="editSelectedKey()">Edit</button>
+                        <button class="btn" onclick="deleteSelectedKey()" style="background:linear-gradient(180deg,#7f1d1d,#991b1b)">Delete</button>
+                    </div>
+                </div>
+
+                <div class="meta" id="keyMeta" class="hidden">
+                    <div class="tag" id="detailType">Type: —</div>
+                    <div class="tag" id="detailTTL">TTL: —</div>
+                    <div class="tag" id="detailSize">Size: —</div>
+                </div>
+
+                <div class="value-box" id="valueBox">
+                    <div class="muted">Value preview will appear here when a key is selected.</div>
+                </div>
+
+                <div style="margin-top:auto; display:flex; gap:8px; align-items:center;" id="keyTools" class="hidden">
+                    <div class="small-muted">Last fetched: <span id="lastFetched">—</span></div>
+                    <div style="flex:1"></div>
+                    <button class="btn ghost" onclick="exportKey()">Export</button>
+                    <button class="btn ghost" onclick="copyKeyValue()">Copy</button>
+                </div>
+            </aside>
+
+            <!-- Console -->
+            <div class="console">
+                <div style="display:flex;align-items:center;gap:12px;min-width:240px">
+                    <div style="font-size:13px;font-weight:600">CLI</div>
+                    <div class="small-muted">Send raw commands</div>
+                </div>
+
+                <div class="input-console">
+                    <input id="cliInput" placeholder="e.g. GET user:1001" onkeydown="handleCliEnter(event)" />
+                    <button class="btn ghost" onclick="runCliCommand()">Run</button>
+                    <button class="btn ghost" onclick="clearConsole()">Clear</button>
+                </div>
+
+                <div style="min-width:260px; text-align:right;">
+                    <div class="small-muted">Latency</div>
+                    <div style="font-weight:700" id="latency">— ms</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Connection Modal -->
+    <div class="connection-screen hidden" id="connectionModal">
+        <div class="connect-card fade-up">
+            <h2>Connect to Redis</h2>
+            <p>Paste a connection string or endpoint for local, cloud, or cluster instances. 
+               Example: <span class="small-muted">redis://:password@127.0.0.1:6379/0</span></p>
+
+            <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="form-row">
+                    <input id="connInput" type="text" placeholder="redis://localhost:6379 or host:port" value="http://localhost:5000" />
+                    <button class="btn" onclick="connectToRedis()">Connect</button>
+                </div>
+
+                <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <input id="saveConn" type="checkbox" checked />
+                        <label for="saveConn" class="small-muted">Save connection</label>
+                    </div>
+                    <div class="small-muted">Security: <strong id="securityStatus" style="color:#fca5a5">TLS optional</strong></div>
+                </div>
+
+                <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+                    <div id="connFeedback" class="small-muted">Ready to connect</div>
+                    <div style="flex:1"></div>
+                    <button class="btn ghost" onclick="toggleAdvanced()">Advanced</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Editor Modal -->
+    <div class="modal-overlay hidden" id="keyEditorModal">
+        <div class="key-editor-modal">
+            <h3 id="editorTitle">Create New Key</h3>
+            <form onsubmit="saveKey(event)">
+                <div class="form-group">
+                    <label for="keyName">Key Name</label>
+                    <input id="keyName" type="text" required placeholder="e.g. user:1001" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="keyType">Type</label>
+                    <select id="keyType">
+                        <option value="string">String</option>
+                        <option value="hash">Hash</option>
+                        <option value="list">List</option>
+                        <option value="set">Set</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="keyValue">Value</label>
+                    <textarea id="keyValue" required rows="8" placeholder="Enter value..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="keyTtl">TTL (seconds, optional)</label>
+                    <input id="keyTtl" type="number" min="1" placeholder="Leave empty for no expiration" />
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn ghost" onclick="closeKeyEditor()">Cancel</button>
+                    <button type="submit" class="btn" id="saveBtn">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

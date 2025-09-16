@@ -1,0 +1,105 @@
+<div class="keys-header">
+  <div>
+    <div class="keys-title">{{ ui.keys.header }}</div>
+    <div class="small-muted">
+      <ng-container *ngIf="total > 0; else noKeys"
+        >{{ ui.keys.page }} {{ page + 1 }} / {{ totalPages }} • Showing
+        {{ displayedKeys.length }} {{ ui.keys.of }} {{ total }}
+        {{ ui.keys.header | lowercase }}</ng-container
+      >
+      <ng-template #noKeys>{{ ui.keys.empty }}</ng-template>
+    </div>
+  </div>
+  <div class="actions-row">
+    <div class="search" role="search">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M11 19a8 8 0 1 1 5.293-14.293A8 8 0 0 1 11 19Z"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+        <path
+          d="M21 21l-4.35-4.35"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        ></path>
+      </svg>
+      <input
+        [ngModel]="searchPattern"
+        (ngModelChange)="onSearchChange($event)"
+        placeholder="{{ 'Search keys (pattern: *user:*)' }}"
+      />
+    </div>
+    <select
+      [ngModel]="typeFilter"
+      (ngModelChange)="onTypeFilterChange($event)"
+      class="small-muted"
+      aria-label="Filter by type"
+    >
+      <option value="">{{ "All types" }}</option>
+      <option value="string">string</option>
+      <option value="hash">hash</option>
+      <option value="list">list</option>
+      <option value="set">set</option>
+      <option value="zset">sorted set</option>
+    </select>
+    <button
+      class="btn ghost"
+      (click)="refresh.emit()"
+      [disabled]="!isConnected"
+    >
+      {{ ui.actions.refresh }}
+    </button>
+  </div>
+</div>
+
+<div class="key-list" role="list">
+  <div
+    *ngFor="let key of displayedKeys; trackBy: trackByKey"
+    class="key-row"
+    [class.selected]="selectedKey?.key === key.key"
+    (click)="select.emit(key)"
+    (keydown.enter)="select.emit(key)"
+    tabindex="0"
+    role="listitem"
+    [attr.aria-label]="'key ' + key.key"
+  >
+    <div class="type-color" [style.background]="getTypeColor(key.type)"></div>
+    <div class="key-main">
+      <div class="key-name">{{ key.key }}</div>
+      <div class="small-muted">{{ getKeyDescription(key) }}</div>
+    </div>
+    <div class="type-pill">{{ key.type }}</div>
+    <div class="ttl small-muted">
+      TTL: <ng-container *ngIf="key.ttl; else noTtl">{{ key.ttl }}s ({{ (key.ttl!/86400) | number:'1.0-2' }} d)</ng-container>
+      <ng-template #noTtl>—</ng-template>
+    </div>
+    <div class="ttl small-muted" title="Days remaining (rounded up)">
+      <ng-container *ngIf="key.daysToExpire !== null && key.daysToExpire !== undefined; else noDays">{{ key.daysToExpire }}d</ng-container>
+      <ng-template #noDays>∞</ng-template>
+    </div>
+  </div>
+
+  <div *ngIf="isLoadingKeys" class="loading-overlay" aria-live="polite">
+    <app-ui-spinner></app-ui-spinner>
+  </div>
+
+  <div
+    *ngIf="!isLoadingKeys && displayedKeys.length === 0 && isConnected"
+    class="empty-state"
+  >
+    <div class="small-muted">{{ ui.keys.empty }}</div>
+    <button class="btn ghost" (click)="openNewKey.emit()">
+      {{ ui.keys.createFirst }}
+    </button>
+  </div>
+</div>

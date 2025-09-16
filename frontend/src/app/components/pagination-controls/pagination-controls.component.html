@@ -1,0 +1,46 @@
+<div class="pagination" *ngIf="totalPages > 1">
+  <button
+    class="btn ghost"
+    (click)="first()"
+    [disabled]="page === 0 || disabled"
+  >
+    {{ "« First" }}
+  </button>
+  <button
+    class="btn ghost"
+    (click)="prev()"
+    [disabled]="page === 0 || disabled"
+  >
+    {{ "‹ Prev" }}
+  </button>
+  <div class="small-muted">
+    {{ ui.keys.page }} {{ page + 1 }} {{ ui.keys.of }} {{ totalPages }}
+  </div>
+  <button
+    class="btn ghost"
+    (click)="next()"
+    [disabled]="page >= totalPages - 1 || disabled"
+  >
+    {{ "Next ›" }}
+  </button>
+  <button
+    class="btn ghost"
+    (click)="last()"
+    [disabled]="page >= totalPages - 1 || disabled"
+  >
+    {{ "Last »" }}
+  </button>
+  <div class="small-muted">
+    {{ "Page Size:" }}
+    <select
+      #psel
+      [value]="pageSize"
+      (change)="onPageSizeChange(psel.value)"
+      class="page-size-select"
+    >
+      <option *ngFor="let size of pageSizeOptions" [value]="size">
+        {{ size }}
+      </option>
+    </select>
+  </div>
+</div>

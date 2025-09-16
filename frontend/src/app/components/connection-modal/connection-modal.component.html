@@ -1,0 +1,95 @@
+<div
+  class="connection-screen"
+  [class.hidden]="!isVisible"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Connect to Redis"
+>
+  <div class="connect-card fade-up" role="document">
+    <button
+      *ngIf="isAlreadyConnected"
+      type="button"
+      class="modal-close-btn"
+      aria-label="Close"
+      (click)="hide()"
+    >
+      ×
+    </button>
+    <h2>{{ ui.connection.connectTitle }}</h2>
+    <p>
+      {{ ui.connection.connectDescription }}
+      {{ "Example:" }}
+      <span class="small-muted">{{ ui.connection.example }}</span>
+    </p>
+
+    <form [formGroup]="connectionForm" (ngSubmit)="onConnect()" novalidate>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div class="form-row">
+          <input
+            id="connInput"
+            type="text"
+            formControlName="connectionString"
+            placeholder="{{ ui.connection.placeholder }}"
+            aria-label="Connection string"
+            [class.error]="
+              connectionForm.get('connectionString')?.invalid &&
+              connectionForm.get('connectionString')?.touched
+            "
+          />
+          <button
+            type="submit"
+            class="btn"
+            [disabled]="connectionForm.invalid || isConnecting"
+            [attr.aria-busy]="isConnecting"
+          >
+            {{ isConnecting ? "Connecting..." : ui.actions.connect }}
+          </button>
+        </div>
+
+        <div class="form-footer-row">
+          <div class="save-checkbox">
+            <input
+              id="saveConn"
+              type="checkbox"
+              formControlName="saveConnection"
+              aria-label="Save connection"
+            />
+            <label for="saveConn" class="small-muted">{{
+              ui.connection.saveLabel
+            }}</label>
+          </div>
+          <div class="security-indicator small-muted">
+            {{ "Security:" }}
+            <strong [style.color]="isSecure ? '#10b981' : '#fca5a5'">
+              {{
+                isSecure
+                  ? ui.connection.securityTls
+                  : ui.connection.securityOptional
+              }}
+            </strong>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div *ngIf="recentConnections.length > 0" class="recent-connections">
+      <h4 class="small-muted">{{ ui.connection.recent }}</h4>
+      <div class="connection-list">
+        <div
+          *ngFor="let conn of recentConnections"
+          class="connection-item"
+          (click)="selectConnection(conn)"
+          (keydown.enter)="selectConnection(conn)"
+          tabindex="0"
+          role="button"
+        >
+          <div class="connection-badge">{{ conn.charAt(0).toUpperCase() }}</div>
+          <div style="flex: 1">
+            <div style="font-weight: 600">{{ getConnectionName(conn) }}</div>
+            <div class="small-muted">{{ conn }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

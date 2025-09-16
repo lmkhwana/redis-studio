@@ -1,0 +1,9 @@
+<div class="memory-usage">
+  <div class="small-muted">{{ "Memory Usage" }}</div>
+  <div class="memory-bar-wrapper">
+    <div class="memory-bar-track">
+      <div class="memory-bar-fill" [style.width.%]="percent"></div>
+    </div>
+    <div class="small-muted">{{ percent }}%</div>
+  </div>
+</div>
