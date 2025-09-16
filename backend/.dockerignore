@@ -1,11 +1,25 @@
+# Ignore Visual Studio stuff
 .vs
+**/.vs
+
+# Ignore build outputs
 bin
 obj
+**/bin
+**/obj
+
+# Ignore user-specific files
 *.user
 *.suo
 *.cache
+
+# Ignore Docker configs you don't want in context
 Dockerfile
 Dockerfile.*
+docker-compose.yml
+docker-compose.*.yml
+
+# Ignore VCS and docs
 .git
 .gitignore
 README.md
