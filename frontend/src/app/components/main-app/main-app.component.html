@@ -3,6 +3,7 @@
     [isConnected]="isConnected"
     [connectionStatusText]="connectionStatusText"
     [connectionStatusColor]="connectionStatusColor"
+    [currentTheme]="themeService.isDarkTheme() ? 'dark' : 'light'"
     (connect)="openConnectionModal()"
     (disconnect)="disconnect()"
     (newKey)="openNewKeyDialog()"

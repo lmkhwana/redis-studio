@@ -11,6 +11,12 @@
       <span class="dot" [style.background]="connectionStatusColor"></span>
       <span class="muted">{{ connectionStatusText }}</span>
     </div>
+    <button class="btn ghost" (click)="onToggleTheme()" aria-label="Toggle dark / light mode" title="Toggle theme">
+      <span style="display:inline-flex;align-items:center;gap:6px;">
+        <svg *ngIf="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v2"/><path d="M12 19v2"/><path d="M5.64 5.64l1.42 1.42"/><path d="M16.94 16.94l1.42 1.42"/><path d="M3 12h2"/><path d="M19 12h2"/><path d="M5.64 18.36l1.42-1.42"/><path d="M16.94 7.05l1.42-1.41"/><circle cx="12" cy="12" r="5"/></svg>
+        <span>{{ currentTheme === 'dark' ? 'Light Mode' : 'Dark Mode' }}</span>
+      </span>
+    </button>
     <button class="btn ghost" *ngIf="!isConnected" (click)="onConnect()">
       {{ ui.actions.connect }}
     </button>

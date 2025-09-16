@@ -1,4 +1,6 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import { Subject, Subscription } from "rxjs";
+import { debounceTime } from "rxjs/operators";
 import { RedisService } from "../../services/redis.service";
 import { ThemeService } from "../../services/theme.service";
 import {
@@ -17,7 +19,7 @@ import { UI_TEXT } from "../../abstractions/constants/ui.constants";
   templateUrl: "./main-app.component.html",
   styleUrls: ["./main-app.component.css"],
 })
-export class MainAppComponent implements OnInit {
+export class MainAppComponent implements OnInit, OnDestroy {
   ui = UI_TEXT;
   @ViewChild("connectionModal") connectionModal?: ConnectionModalComponent;
 
@@ -62,7 +64,19 @@ export class MainAppComponent implements OnInit {
     private redisService: RedisService
   ) {}
 
+  private searchSubject = new Subject<string>();
+  private subs: Subscription[] = [];
+
   ngOnInit(): void {
+    // Theme initialization
+    this.themeService.initializeTheme();
+
+    this.subs.push(
+      this.searchSubject.pipe(debounceTime(300)).subscribe((pattern) => {
+        this.page = 0;
+        this.refreshKeys();
+      })
+    );
     // Attempt to restore previous connection
     this.redisService.initializeFromStorage();
     // After short delay, open modal if still not connected
@@ -125,7 +139,11 @@ export class MainAppComponent implements OnInit {
   }
 
   onSearchChange(): void {
-    this.applyFilters();
+    this.searchSubject.next(this.searchPattern);
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach((s) => s.unsubscribe());
   }
   onFilterChange(): void {
     this.applyFilters();

@@ -78,6 +78,10 @@ export class ThemeService {
       root.style.setProperty("--glass-2", "rgba(255,255,255,0.02)");
       root.style.setProperty("--text-primary", "#e6eef6");
       root.style.setProperty("--text-secondary", "#9aa4b2");
+      root.style.setProperty("--modal-bg", "linear-gradient(180deg, #071026 0%, #071827 60%)");
+      root.style.setProperty("--panel-gradient", "linear-gradient(180deg, var(--glass-2), rgba(255,255,255,0.01))");
+      root.style.setProperty("--topbar-gradient", "linear-gradient(90deg, var(--glass-2), rgba(255,255,255,0.01))");
+      root.style.setProperty("--body-gradient", "linear-gradient(180deg,#071026 0%,#071827 60%)");
     } else {
       root.style.setProperty("--bg", "#f8fafc");
       root.style.setProperty("--panel", "#ffffff");
@@ -87,6 +91,10 @@ export class ThemeService {
       root.style.setProperty("--glass-2", "rgba(0,0,0,0.02)");
       root.style.setProperty("--text-primary", "#1e293b");
       root.style.setProperty("--text-secondary", "#64748b");
+      root.style.setProperty("--modal-bg", "linear-gradient(180deg,#ffffff,#f1f5f9)");
+      root.style.setProperty("--panel-gradient", "linear-gradient(180deg,#ffffff,#f1f5f9)");
+      root.style.setProperty("--topbar-gradient", "linear-gradient(90deg,#ffffff,#f1f5f9)");
+      root.style.setProperty("--body-gradient", "linear-gradient(180deg,#ffffff,#e2e8f0)");
     }
   }
 }

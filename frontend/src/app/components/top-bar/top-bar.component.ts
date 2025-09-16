@@ -10,6 +10,7 @@ export class TopBarComponent {
   @Input() isConnected = false;
   @Input() connectionStatusText = "Not connected";
   @Input() connectionStatusColor = "#f97316";
+  @Input() currentTheme: 'dark' | 'light' = 'dark';
   @Output() connect = new EventEmitter<void>();
   @Output() disconnect = new EventEmitter<void>();
   @Output() newKey = new EventEmitter<void>();
