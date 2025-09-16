@@ -1,6 +1,7 @@
-<div class="modal-overlay" *ngIf="visible" (click)="closed.emit()">
-  <div class="key-editor-modal" (click)="$event.stopPropagation()">
-    <h3>{{ isEdit() ? ui.editor.editTitle : ui.editor.createTitle }}</h3>
+<div class="modal-screen" *ngIf="visible" (click)="closed.emit()" role="dialog" aria-modal="true" [attr.aria-label]="isEdit() ? ui.editor.editTitle : ui.editor.createTitle">
+  <div class="modal-card fade-up" (click)="$event.stopPropagation()" role="document">
+    <button type="button" class="modal-close-btn" aria-label="Close" (click)="closed.emit()">×</button>
+    <h2 style="margin:0 0 14px 0; font-size:20px;">{{ isEdit() ? ui.editor.editTitle : ui.editor.createTitle }}</h2>
     <form #f="ngForm" (ngSubmit)="submit(f.valid)">
       <div class="form-group">
         <label for="keyName">{{ ui.editor.keyName }}</label>
@@ -49,7 +50,7 @@
           placeholder="{{ 'Leave empty for no expiration' }}"
         />
       </div>
-      <div class="form-actions">
+      <div class="form-actions" style="margin-top:18px;">
         <button type="button" class="btn ghost" (click)="closed.emit()">
           {{ ui.editor.cancel }}
         </button>

@@ -1,49 +1,4 @@
-/* Connection Modal Styles */
-.connection-screen {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  z-index: 1200;
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(30, 60, 90, 0.55),
-    rgba(3, 8, 20, 0.92)
-  );
-  backdrop-filter: blur(10px) saturate(140%);
-  animation: fadeBg 0.4s ease;
-}
-.connect-card {
-  width: 520px;
-  max-width: 92%;
-  padding: 26px 28px 30px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #071026 0%, #071827 60%);
-  color: var(--text-primary);
-  position: relative;
-  overflow: hidden;
-}
-.modal-close-btn {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: var(--glass-2);
-  color: var(--muted);
-  border: 1px solid var(--glass);
-  cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
-  display: grid;
-  place-items: center;
-  transition: all .2s;
-}
-.modal-close-btn:hover {
-  color: var(--text-primary);
-  background: var(--glass);
-}
+/* Connection modal component-specific styles (container + close button now global) */
 .form-footer-row {
   display:flex;
   gap:10px;
@@ -53,37 +8,12 @@
 }
 .save-checkbox { display:flex; gap:8px; align-items:center; }
 .security-indicator strong { font-weight:600; }
-.connect-card:before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    rgba(79, 209, 197, 0.12),
-    transparent 60%
-  );
-  pointer-events: none;
-  mix-blend-mode: overlay;
-}
-.connect-card h2 {
-  letter-spacing: 0.5px;
-}
-@keyframes fadeBg {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.connect-card h2 {
+.modal-card h2 {
   margin: 0 0 6px 0;
   font-size: 20px;
   color: var(--text-primary);
 }
-
-.connect-card p {
+.modal-card p {
   margin: 0 0 16px 0;
   color: var(--muted);
   font-size: 13px;
@@ -115,51 +45,6 @@
   border-color: #ef4444;
 }
 
-.btn {
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #05202a, #07303a);
-  border: 1px solid var(--glass);
-  cursor: pointer;
-  color: var(--accent);
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  transition: all 0.2s;
-}
-.btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(79, 209, 197, 0.2);
-}
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.btn.ghost {
-  background: transparent;
-  color: var(--muted);
-  border: 1px dashed var(--glass);
-  font-weight: 500;
-}
-
-.small-muted {
-  font-size: 12px;
-  color: var(--muted);
-}
-.hidden {
-  display: none !important;
-}
-
-.fade-up {
-  transform: translateY(8px);
-  opacity: 0;
-  animation: pop 0.42s ease forwards;
-}
-@keyframes pop {
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
 .recent-connections {
   margin-top: 16px;

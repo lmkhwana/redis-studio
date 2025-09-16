@@ -1,28 +1,4 @@
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-.key-editor-modal {
-  background: linear-gradient(
-    180deg,
-    var(--glass-2),
-    rgba(255, 255, 255, 0.01)
-  );
-  border-radius: 12px;
-  padding: 24px;
-  width: 500px;
-  max-width: 90vw;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--glass);
-}
-.key-editor-modal h3 {
-  margin: 0 0 20px 0;
-}
+/* Key Editor Modal form-specific styles (container styles now shared globally) */
 .form-group {
   margin-bottom: 16px;
 }
@@ -51,9 +27,4 @@
   resize: vertical;
   min-height: 120px;
 }
-.form-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 24px;
-}
+.form-actions { display:flex; gap:12px; justify-content:flex-end; }
