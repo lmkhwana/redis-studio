@@ -32,6 +32,8 @@
   --border-color-strong: #1e2a3a;
   --shadow-elev: 0 8px 24px rgba(2, 6, 23, 0.6);
   --shadow-modal: 0 10px 32px rgba(0,0,0,0.55);
+  --shadow-topbar: 0 4px 14px rgba(2,6,23,0.55);
+  --shadow-card: var(--shadow-elev);
   --focus-ring: 0 0 0 2px #0b1220, 0 0 0 4px var(--accent);
   --accent-alt: #2dd4bf;
   --scrollbar-track: #0b1220;
@@ -125,7 +127,7 @@ body {
   padding: 10px 14px;
   background: var(--topbar-gradient);
   border-radius: 12px;
-  box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6), inset 0 1px 0 var(--glass);
+  box-shadow: var(--shadow-topbar), inset 0 1px 0 var(--glass);
 }
 
 .brand {
@@ -170,7 +172,7 @@ body {
   background: var(--panel-gradient);
   border-radius: var(--radius);
   padding: 16px;
-  box-shadow: var(--shadow-elev);
+  box-shadow: var(--shadow-card);
   border: 1px solid var(--glass);
   min-height: 0;
   display: flex;
