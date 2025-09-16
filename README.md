@@ -4,6 +4,7 @@ A Redis client with a beautiful web interface built with Angular and ASP.NET Cor
 
 ![Redis Studio Connection Screenshot](docs/screenshot-connection.png)
 ![Redis Studio Main Screenshot](docs/screenshot-main.png)
+![Redis Studio New Key Screenshot](docs/screenshot-newkey.png)
 
 ## ✨ Features
 
