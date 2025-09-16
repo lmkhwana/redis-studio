@@ -1,0 +1,38 @@
+<div
+  class="modal-screen"
+  *ngIf="visible"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="title"
+  (click)="onCancel()"
+>
+  <div
+    class="modal-card fade-up"
+    role="document"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      type="button"
+      class="modal-close-btn"
+      aria-label="Close"
+      (click)="onCancel()"
+    >
+      ×
+    </button>
+    <h2 style="margin: 0 0 10px 0; font-size: 20px">{{ title }}</h2>
+    <p class="small-muted" style="margin: 0 0 18px 0">{{ message }}</p>
+    <div style="display: flex; gap: 10px; justify-content: flex-end">
+      <button type="button" class="btn ghost" (click)="onCancel()">
+        {{ cancelText }}
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [ngStyle]="destructive ? { color: '#f87171' } : null"
+        (click)="onConfirm()"
+      >
+        {{ confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

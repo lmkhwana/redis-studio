@@ -123,3 +123,18 @@
   (closed)="closeKeyEditor()"
   (save)="onKeyEditorSave($any($event))"
 ></app-key-editor-modal>
+
+<app-confirmation-modal
+  [visible]="confirmDeleteVisible"
+  [title]="'Delete Key'"
+  [message]="
+    pendingDeleteKey
+      ? 'Are you sure you want to delete \'' + pendingDeleteKey + '\'?'
+      : ''
+  "
+  [confirmText]="'Delete'"
+  [cancelText]="'Cancel'"
+  [destructive]="true"
+  (confirmed)="onConfirmDelete()"
+  (cancelled)="onCancelDelete()"
+></app-confirmation-modal>

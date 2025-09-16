@@ -69,3 +69,24 @@
   align-items: center;
   margin-bottom: 4px;
 }
+.details-header > div:first-child {
+  min-width: 0;
+  max-width: 100%;
+}
+.details-header h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  max-width: 100%;
+  width: 189px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.details-header .small-muted {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}

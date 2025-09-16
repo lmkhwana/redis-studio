@@ -53,6 +53,10 @@ export class MainAppComponent implements OnInit {
 
   memoryUsagePercent = 0;
 
+  // Confirmation modal state
+  confirmDeleteVisible = false;
+  pendingDeleteKey: string | null = null;
+
   constructor(
     public themeService: ThemeService,
     private redisService: RedisService
@@ -222,7 +226,8 @@ export class MainAppComponent implements OnInit {
   }
 
   canEditKey(): boolean {
-    return !!this.selectedKey && ["string"].includes(this.selectedKey.type);
+    // return !!this.selectedKey && ["string"].includes(this.selectedKey.type);
+    return true;
   }
   closeKeyEditor(): void {
     this.keyEditorVisible = false;
@@ -255,15 +260,29 @@ export class MainAppComponent implements OnInit {
 
   deleteSelectedKey(): void {
     if (!this.selectedKey) return;
-    const keyToDelete = this.selectedKey.key;
-    if (!confirm(`Delete key ${keyToDelete}?`)) return;
+    this.pendingDeleteKey = this.selectedKey.key;
+    this.confirmDeleteVisible = true;
+  }
+
+  onConfirmDelete(): void {
+    if (!this.pendingDeleteKey) return;
+    const keyToDelete = this.pendingDeleteKey;
     this.redisService.deleteKey(keyToDelete).subscribe((success) => {
       if (success) {
-        this.selectedKey = null;
-        this.selectedKeyValue = null;
+        if (this.selectedKey?.key === keyToDelete) {
+          this.selectedKey = null;
+          this.selectedKeyValue = null;
+        }
         this.refreshKeys();
       }
+      this.confirmDeleteVisible = false;
+      this.pendingDeleteKey = null;
     });
+  }
+
+  onCancelDelete(): void {
+    this.confirmDeleteVisible = false;
+    this.pendingDeleteKey = null;
   }
 
   disconnect(): void {

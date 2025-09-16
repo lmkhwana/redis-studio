@@ -28,6 +28,7 @@ import { KeyDetailsComponent } from "./components/key-details/key-details.compon
 import { PaginationControlsComponent } from "./components/pagination-controls/pagination-controls.component";
 import { UiSpinnerComponent } from "./components/ui-spinner/ui-spinner.component";
 import { KeyEditorModalComponent } from "./components/key-editor-modal/key-editor-modal.component";
+import { ConfirmationModalComponent } from "./components/confirmation-modal/confirmation-modal.component";
 
 // Services
 import { RedisService } from "./services/redis.service";
@@ -45,6 +46,7 @@ import { ThemeService } from "./services/theme.service";
     PaginationControlsComponent,
     UiSpinnerComponent,
     KeyEditorModalComponent,
+    ConfirmationModalComponent,
   ],
   imports: [
     BrowserModule,

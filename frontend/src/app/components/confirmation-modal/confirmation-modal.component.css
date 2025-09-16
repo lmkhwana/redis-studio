@@ -1,0 +1,4 @@
+/* Uses shared modal styles; only specific adjustments here */
+:host {
+  display: contents;
+}
