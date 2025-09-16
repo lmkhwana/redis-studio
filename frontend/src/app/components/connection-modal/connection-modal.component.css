@@ -41,9 +41,7 @@
 .form-row input:focus {
   border-color: var(--accent);
 }
-.form-row input.error {
-  border-color: #ef4444;
-}
+.form-row input.error { border-color: var(--danger); }
 
 
 .recent-connections {
@@ -84,7 +82,7 @@
   place-items: center;
   font-weight: 700;
   font-size: 12px;
-  background: linear-gradient(180deg, #123, #0b1320);
+  background: var(--panel-alt);
   color: var(--accent);
 }
 .connection-item div[style*="flex:1"] {

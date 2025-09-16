@@ -82,6 +82,29 @@ export class ThemeService {
       root.style.setProperty("--panel-gradient", "linear-gradient(180deg, var(--glass-2), rgba(255,255,255,0.01))");
       root.style.setProperty("--topbar-gradient", "linear-gradient(90deg, var(--glass-2), rgba(255,255,255,0.01))");
       root.style.setProperty("--body-gradient", "linear-gradient(180deg,#071026 0%,#071827 60%)");
+      // Extended dark
+      root.style.setProperty("--panel-alt", "#071827");
+      root.style.setProperty("--gradient-accent", "linear-gradient(135deg, #0ea5a4, #2dd4bf)");
+      root.style.setProperty("--btn-accent-bg", "#0ea5a4");
+      root.style.setProperty("--btn-accent-bg-hover", "#2dd4bf");
+      root.style.setProperty("--btn-accent-text", "#042027");
+      root.style.setProperty("--btn-warn-bg", "#f97316");
+      root.style.setProperty("--btn-warn-text", "#042027");
+      root.style.setProperty("--danger", "#ef4444");
+      root.style.setProperty("--btn-danger-border", "#ef4444");
+      root.style.setProperty("--btn-danger-bg", "rgba(239,68,68,0.08)");
+      root.style.setProperty("--btn-danger-text", "#ef4444");
+      root.style.setProperty("--input-bg", "var(--glass-2)");
+      root.style.setProperty("--input-border", "var(--glass)");
+      root.style.setProperty("--input-border-focus", "var(--accent)");
+      root.style.setProperty("--border-color", "var(--glass)");
+      root.style.setProperty("--border-color-strong", "#1e2a3a");
+      root.style.setProperty("--shadow-elev", "0 8px 24px rgba(2, 6, 23, 0.6)");
+      root.style.setProperty("--shadow-modal", "0 10px 32px rgba(0,0,0,0.55)");
+      root.style.setProperty("--focus-ring", "0 0 0 2px #0b1220, 0 0 0 4px var(--accent)");
+      root.style.setProperty("--accent-alt", "#2dd4bf");
+      root.style.setProperty("--scrollbar-track", "#0b1220");
+      root.style.setProperty("--scrollbar-thumb", "#1e2a3a");
     } else {
       root.style.setProperty("--bg", "#f8fafc");
       root.style.setProperty("--panel", "#ffffff");
@@ -95,6 +118,29 @@ export class ThemeService {
       root.style.setProperty("--panel-gradient", "linear-gradient(180deg,#ffffff,#f1f5f9)");
       root.style.setProperty("--topbar-gradient", "linear-gradient(90deg,#ffffff,#f1f5f9)");
       root.style.setProperty("--body-gradient", "linear-gradient(180deg,#ffffff,#e2e8f0)");
+      // Extended light
+      root.style.setProperty("--panel-alt", "#e2e8f0");
+      root.style.setProperty("--gradient-accent", "linear-gradient(135deg, #0ea5a4, #2dd4bf)");
+      root.style.setProperty("--btn-accent-bg", "#0ea5a4");
+      root.style.setProperty("--btn-accent-bg-hover", "#0891b2");
+      root.style.setProperty("--btn-accent-text", "#042027");
+      root.style.setProperty("--btn-warn-bg", "#f97316");
+      root.style.setProperty("--btn-warn-text", "#ffffff");
+      root.style.setProperty("--danger", "#dc2626");
+      root.style.setProperty("--btn-danger-border", "#dc2626");
+      root.style.setProperty("--btn-danger-bg", "#fee2e2");
+      root.style.setProperty("--btn-danger-text", "#dc2626");
+      root.style.setProperty("--input-bg", "#ffffff");
+      root.style.setProperty("--input-border", "#cbd5e1");
+      root.style.setProperty("--input-border-focus", "#0891b2");
+      root.style.setProperty("--border-color", "#cbd5e1");
+      root.style.setProperty("--border-color-strong", "#94a3b8");
+      root.style.setProperty("--shadow-elev", "0 4px 14px rgba(0,0,0,0.08)");
+      root.style.setProperty("--shadow-modal", "0 10px 32px rgba(0,0,0,0.12)");
+      root.style.setProperty("--focus-ring", "0 0 0 2px #ffffff, 0 0 0 4px #0891b2");
+      root.style.setProperty("--accent-alt", "#0891b2");
+      root.style.setProperty("--scrollbar-track", "#f1f5f9");
+      root.style.setProperty("--scrollbar-thumb", "#cbd5e1");
     }
   }
 }
