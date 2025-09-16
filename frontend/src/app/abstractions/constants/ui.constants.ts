@@ -2,7 +2,7 @@
 export const UI_TEXT = {
   app: {
     title: 'Redis Studio',
-    subtitle: 'Redis GUI - CLOUD'
+    subtitle: 'Redis GUI Client'
   },
   connection: {
     connectTitle: 'Connect to Redis',
