@@ -48,25 +48,65 @@ docker-compose up --build
 
 ## 🏗️ Architecture
 
+The project is a two-tier web application (Angular SPA + ASP.NET Core API) communicating with Redis. It emphasizes fast key browsing, multi-connection support, and production-ready containerization.
+
+### High-Level Flow
+1. User opens the Angular SPA (served by Nginx in container or `ng serve`).
+2. User supplies a Redis connection string; backend returns a `connectionId`.
+3. Subsequent API calls include `X-Connection-Id` header to multiplex multiple logical Redis connections (supports future multi-tab / multi-instance scenarios without per-user server state persistence beyond in-memory connection pool).
+4. Key list requests are paginated and stream through Redis keys without loading the entire keyspace into memory.
+5. Frontend displays metadata (TTL, derived days to expire, type, size) and lazy-fetches specific key values when selected.
+
+### Repository Structure
 ```
 redis-studio/
-├── frontend/           # Angular 17+ application
+├── frontend/                 # Angular 16+ SPA (component-driven)
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── components/    # UI components
-│   │   │   ├── services/      # API and theme services
-│   │   │   └── models/        # TypeScript interfaces
-│   │   └── environments/      # Environment configs
-│   ├── Dockerfile
-│   └── nginx.conf
-├── backend/            # ASP.NET Core 8 Web API
-│   ├── RedisStudio.Api/
-│   │   ├── Controllers/       # API endpoints
-│   │   ├── Services/          # Business logic
-│   │   └── Models/           # Data models
-│   └── Dockerfile
-└── podman-compose.yml  # Container orchestration
+│   │   │   ├── components/   # Feature + UI components (key-list, key-details, modals, pagination, spinner, top-bar, memory-usage)
+│   │   │   ├── services/     # `redis.service.ts` (API client), `theme.service.ts`
+│   │   │   ├── abstractions/ # (Planned) central models & constants (`ui.constants.ts` already present)
+│   │   │   └── ...
+│   │   └── environments/     # Angular environment configs (api base injected at build/runtime)
+│   ├── Dockerfile            # Multi-stage build -> Nginx static serve with runtime env substitution
+│   └── nginx.conf            # Security headers + SPA routing
+├── backend/
+│   ├── RedisStudio.Api/      # ASP.NET Core 8 minimal hosting model
+│   │   ├── Controllers/      # `RedisController` (connection mgmt, CRUD, pagination, server info, disconnect)
+│   │   ├── Services/         # `RedisService` (key ops, streaming pagination, TTL & size calc), `RedisConnectionManager`
+│   │   ├── Interfaces/       # Contracts (IRedisService, IRedisConnectionManager)
+│   │   ├── Models/           # DTOs: key metadata (ttl, daysToExpire, size, rawString)
+│   │   └── Program.cs        # App setup (+ `/health` endpoint, permissive CORS for SPA)
+│   ├── Dockerfile            # SDK build stage -> runtime image; `.dockerignore` trims context
+│   └── .dockerignore         # Excludes `.vs/`, `bin/`, `obj/` to avoid Windows file locks
+├── podman-compose.yml        # Orchestration: redis, backend, frontend w/ healthchecks
+└── docs/                     # Screenshots & assets
 ```
+
+### Backend Design
+- **Connection Multiplexing**: Clients obtain a `connectionId` via `POST /api/redis/connection/connect`; in-memory dictionary holds `ConnectionMultiplexer` instances. All subsequent calls must send `X-Connection-Id` header.
+- **Streaming Pagination**: `RedisService.GetKeysPageAsync` iterates server keys lazily, only materializing the requested page’s metadata while still counting total for page navigation.
+- **Metadata Enrichment**: Each key includes: type, TTL seconds, derived `daysToExpire` (ceil), size (type-specific metric), and last accessed timestamp.
+- **Selective Value Fetch**: Full value fetched only when a specific key is requested; list/hash/set values are size-limited to prevent over-fetch.
+- **Health Endpoint**: `/health` lightweight probe used by compose healthchecks.
+
+### Frontend Design
+- **Componentization**: Separate components for structural (top bar, layout parts) and functional areas (key list, key details, pagination, modals, memory usage, spinner) enabling future lazy-loading.
+- **State Handling**: Connection state + `connectionId` persisted in `localStorage` for refresh resilience. Key selection & pagination held in component state; service abstracts API calls.
+- **Constants & Accessibility**: UI strings centralized (`ui.constants.ts`); ARIA roles/labels and keyboard interactions implemented for core interactive components.
+- **Runtime API Base**: Angular build can have API base replaced at container start (env substitution script in frontend Dockerfile) to support different deployment environments without rebuild.
+
+### Container & Deployment
+- **Multi-Stage Builds**: Angular compiled in Node image, served via slim Nginx; .NET built in SDK image then published to runtime image.
+- **Healthchecks**: Redis PING, backend `/health`, frontend root fetch to ensure readiness before reporting healthy.
+- **Optimized Context**: Backend `.dockerignore` prevents locked `.vs` files causing Podman build failures on Windows.
+
+### Planned / In-Progress Refactors
+- Consolidate TypeScript interfaces into `abstractions/models` barrel.
+- Introduce layout wrapper components.
+- Further extraction of remaining inline styles to component stylesheets.
+
+This architecture balances fast iteration (simple in-memory connection registry) with scalability (header-based connection isolation, streaming key enumeration, containerized delivery).
 
 ## 🛠️ Development Setup
 
