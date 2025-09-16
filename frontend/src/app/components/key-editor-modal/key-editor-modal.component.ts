@@ -49,10 +49,11 @@ export class KeyEditorModalComponent implements OnChanges {
     ) {
       if (this.visible) {
         if (this.editingKey) {
+          const initialValue = this.computeInitialValue();
           this.form = {
             key: this.editingKey.key,
             type: this.editingKey.type,
-            value: this.existingValue ? this.existingValue.value : "",
+            value: initialValue,
             ttlSeconds: this.editingKey.ttl || null,
           };
         } else {
@@ -60,6 +61,28 @@ export class KeyEditorModalComponent implements OnChanges {
         }
       }
     }
+  }
+
+  private computeInitialValue(): string {
+    if (!this.existingValue) return "";
+    // Prefer rawString when editing a simple string key
+    if (this.editingKey?.type === "string") {
+      if (typeof this.existingValue.value === "string") {
+        return this.existingValue.value;
+      }
+      if (this.existingValue.rawString) return this.existingValue.rawString;
+    }
+    // For non-string types, attempt pretty JSON if object/array
+    const v = this.existingValue.value;
+    if (v == null) return "";
+    if (typeof v === "object") {
+      try {
+        return JSON.stringify(v, null, 2);
+      } catch {
+        return String(v);
+      }
+    }
+    return String(v);
   }
 
   isEdit(): boolean {
